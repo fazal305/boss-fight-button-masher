@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Boss Fight Button Masher</title>
+  <link rel="stylesheet" href="boss-styles.css" />
+</head>
+<body>
+  <main class="game-container" id="gameContainer">
+    <section class="game-ui" id="gameUi">
+      <p class="eyebrow">Retro Button Masher</p>
+      <h1 class="game-title">Boss Fight</h1>
+
+      <section class="boss-card">
+        <h2 class="boss-name" id="bossName">Boss Name</h2>
+
+        <p class="boss-dialogue" id="bossDialogue">
+          Press attack. I dare you.
+        </p>
+
+        <div class="boss-stage" id="bossStage">
+          <div class="boss-emoji" id="bossEmoji">🧟</div>
+        </div>
+
+        <div class="power-up-bar">
+          <span id="powerUpText">Power-up: None</span>
+        </div>
+
+        <div class="hp-section">
+          <div class="hp-label">
+            <span>Boss HP</span>
+            <span id="bossHpText">200 / 200</span>
+          </div>
+          <div class="hp-track">
+            <div class="hp-fill boss-hp-fill" id="bossHpFill"></div>
+          </div>
+        </div>
+
+        <div class="hp-section">
+          <div class="hp-label">
+            <span>Player HP</span>
+            <span id="playerHpText">100 / 100</span>
+          </div>
+          <div class="hp-track">
+            <div class="hp-fill player-hp-fill" id="playerHpFill"></div>
+          </div>
+        </div>
+
+        <button class="attack-button" id="attackButton">ATTACK</button>
+
+        <p class="hint-text">
+          Press any keyboard key or tap the button to attack.
+        </p>
+      </section>
+    </section>
+
+    <section class="result-card hidden" id="resultCard">
+      <p class="eyebrow" id="resultEyebrow">Victory</p>
+      <h2 class="result-title" id="resultTitle">Boss Defeated</h2>
+      <p class="result-message" id="resultMessage">Message here.</p>
+      <div class="result-stats" id="resultStats"></div>
+      <button class="result-button" id="resultButton">NEXT BOSS</button>
+    </section>
+  </main>
+
+  <script src="boss-script.js"></script>
+</body>
+</html>

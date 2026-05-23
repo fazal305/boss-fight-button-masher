@@ -1,0 +1,335 @@
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Mono:wght@400;700&display=swap");
+
+:root {
+  --bg-color: #050505;
+  --text-color: #ffffff;
+  --muted-color: #a8a8a8;
+  --track-color: #151515;
+  --boss-color: #39ff14;
+  --player-color: #00ff99;
+  --danger-color: #ff1744;
+  --card-color: rgba(10, 10, 10, 0.92);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.03) 0px,
+      rgba(255, 255, 255, 0.03) 1px,
+      transparent 1px,
+      transparent 5px
+    ),
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.08), transparent 35%),
+    var(--bg-color);
+  color: var(--text-color);
+  font-family: "Space Mono", monospace;
+}
+
+button {
+  font: inherit;
+}
+
+.game-container {
+  width: min(100%, 900px);
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 24px 16px;
+  display: grid;
+  place-items: center;
+}
+
+.game-ui {
+  width: 100%;
+}
+
+.eyebrow {
+  margin: 0 0 14px;
+  color: var(--boss-color);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  font-size: 0.7rem;
+}
+
+.game-title,
+.result-title {
+  margin: 0 0 24px;
+  font-family: "Press Start 2P", monospace;
+  text-align: center;
+  text-transform: uppercase;
+  line-height: 1.5;
+  text-shadow: 0 0 18px var(--boss-color);
+}
+
+.boss-card,
+.result-card {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  padding: 22px;
+  background: var(--card-color);
+  border: 2px solid var(--boss-color);
+  border-radius: 24px;
+  box-shadow: 0 0 35px var(--boss-color);
+}
+
+.boss-name {
+  margin: 0 0 16px;
+  color: var(--boss-color);
+  font-family: "Press Start 2P", monospace;
+  font-size: clamp(0.9rem, 3vw, 1.5rem);
+  line-height: 1.6;
+  text-align: center;
+  text-transform: uppercase;
+  text-shadow: 0 0 18px var(--boss-color);
+}
+
+.boss-dialogue {
+  max-width: 620px;
+  margin: 0 auto 18px;
+  padding: 12px 14px;
+  color: var(--text-color);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--boss-color);
+  border-radius: 16px;
+  text-align: center;
+  font-size: 0.85rem;
+  box-shadow: 0 0 14px rgba(255, 255, 255, 0.08);
+}
+
+.boss-stage {
+  position: relative;
+  min-height: 190px;
+  display: grid;
+  place-items: center;
+}
+
+.boss-emoji {
+  font-size: clamp(80px, 20vw, 160px);
+  filter: drop-shadow(0 0 26px var(--boss-color));
+  user-select: none;
+}
+
+.power-up-bar {
+  margin: 8px 0 18px;
+  padding: 12px;
+  color: var(--boss-color);
+  border: 1px dashed var(--boss-color);
+  border-radius: 14px;
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+}
+
+.hp-section {
+  margin-top: 18px;
+}
+
+.hp-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+  color: var(--muted-color);
+  font-size: 0.82rem;
+  text-transform: uppercase;
+}
+
+.hp-track {
+  height: 20px;
+  overflow: hidden;
+  background: var(--track-color);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+}
+
+.hp-fill {
+  width: 100%;
+  height: 100%;
+  transition: width 0.2s ease;
+}
+
+.boss-hp-fill {
+  background: var(--boss-color);
+  box-shadow: 0 0 18px var(--boss-color);
+}
+
+.player-hp-fill {
+  background: var(--player-color);
+  box-shadow: 0 0 18px var(--player-color);
+}
+
+.player-hp-fill.low-health {
+  background: var(--danger-color);
+  box-shadow: 0 0 18px var(--danger-color);
+}
+
+.attack-button,
+.result-button {
+  width: 100%;
+  margin-top: 24px;
+  padding: 18px 20px;
+  color: var(--text-color);
+  background: transparent;
+  border: 2px solid var(--boss-color);
+  border-radius: 18px;
+  font-family: "Press Start 2P", monospace;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  cursor: pointer;
+  text-transform: uppercase;
+  box-shadow: 0 0 18px var(--boss-color);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.attack-button:hover,
+.result-button:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.attack-button:active,
+.result-button:active {
+  transform: scale(0.97);
+}
+
+.hint-text {
+  margin: 18px 0 0;
+  color: var(--muted-color);
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+.damage-number {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  color: var(--danger-color);
+  font-family: "Press Start 2P", monospace;
+  font-size: 1rem;
+  text-shadow: 0 0 12px var(--danger-color);
+  pointer-events: none;
+  animation: float-damage 0.8s ease forwards;
+}
+
+.result-card {
+  max-width: 650px;
+  text-align: center;
+}
+
+.result-message {
+  color: var(--muted-color);
+  line-height: 1.7;
+}
+
+.result-stats {
+  display: grid;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.stat-badge {
+  padding: 12px;
+  color: var(--boss-color);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--boss-color);
+  border-radius: 14px;
+}
+
+.hidden {
+  display: none;
+}
+
+.shake {
+  animation: screen-shake 0.3s ease;
+}
+
+.hit {
+  animation: boss-hit 0.3s ease;
+}
+
+.boss-dead {
+  animation: boss-death 0.8s ease forwards;
+}
+
+.power-up-flash {
+  animation: power-up-flash 0.5s ease;
+}
+
+@keyframes screen-shake {
+  0%, 100% {
+    transform: translate(0);
+  }
+
+  20% {
+    transform: translate(-8px, 4px);
+  }
+
+  40% {
+    transform: translate(8px, -4px);
+  }
+
+  60% {
+    transform: translate(-6px, -2px);
+  }
+
+  80% {
+    transform: translate(6px, 2px);
+  }
+}
+
+@keyframes boss-hit {
+  50% {
+    filter: drop-shadow(0 0 35px var(--danger-color));
+    transform: scale(1.08);
+  }
+}
+
+@keyframes float-damage {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -80px) scale(1.4);
+  }
+}
+
+@keyframes boss-death {
+  100% {
+    opacity: 0;
+    transform: rotate(0deg) scale(0);
+  }
+}
+
+@keyframes power-up-flash {
+  50% {
+    transform: scale(1.04);
+    box-shadow: 0 0 22px var(--boss-color);
+  }
+}
+
+@media (min-width: 700px) {
+  .game-container {
+    padding: 40px 24px;
+  }
+
+  .boss-card,
+  .result-card {
+    padding: 34px;
+  }
+
+  .attack-button,
+  .result-button {
+    font-size: 0.9rem;
+  }
+}
