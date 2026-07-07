@@ -1,212 +1,106 @@
-# ⚔️ Boss Fight Button Masher
+# Boss Fight Button Masher
 
-A chaotic retro arcade-style boss battle game where you destroy ridiculous enemies by absolutely abusing your keyboard.
+A fast retro browser game where the player taps, clicks, or presses keys to defeat a sequence of escalating arcade bosses.
 
-Built with pure HTML, CSS, and vanilla JavaScript.
+Boss Fight Button Masher is built with HTML, CSS, and vanilla JavaScript. It focuses on simple game state, timed boss attacks, health bars, temporary power-ups, animated feedback, and responsive controls that work on desktop and mobile.
 
----
+## Live Demo
 
-## 🎮 Gameplay
-
-Spam any keyboard key or smash the ATTACK button to damage giant bosses with glowing HP bars, floating damage numbers, screen shake effects, power-ups, retro sound effects, and arcade-style chaos.
-
-Every boss gets harder.
-
-Every fight gets faster.
-
-Your keyboard may never recover.
-
----
-
-## 🚀 Live Demo
-
-```txt
 https://fazal305.github.io/boss-fight-button-masher/
+
+## Preview
+
+![Boss Fight Button Masher screenshot](image.png)
+
+## Features
+
+- Keyboard and button-based attack controls
+- Five escalating boss fights
+- Player HP and boss HP systems
+- Timed boss attacks
+- Random attack names and boss dialogue
+- Temporary power-ups for double damage, healing, and critical hits
+- Floating damage numbers
+- Screen shake and boss hit animations
+- Victory, retry, and final win screens
+- Best-run tracking with `localStorage`
+- Retro sound effects with safe Web Audio fallback
+- Responsive layout for desktop and mobile
+- Reduced-motion support
+
+## Boss Lineup
+
+| Boss                          | Difficulty  |
+| ----------------------------- | ----------- |
+| Deadline Overlord             | Easy        |
+| Exam Season                   | Medium      |
+| Ancient WiFi Router           | Medium-Hard |
+| The Algorithm                 | Hard        |
+| Final Boss: Sleep Deprivation | Insane      |
+
+## Controls
+
+| Action        | Control                      |
+| ------------- | ---------------------------- |
+| Attack        | Press any keyboard key       |
+| Mobile attack | Tap the Attack button        |
+| Next boss     | Use the result screen button |
+| Retry fight   | Use the result screen button |
+
+## Power-Ups
+
+| Power-Up      | Effect                                      |
+| ------------- | ------------------------------------------- |
+| Double Damage | Doubles attack damage for a short time      |
+| Heal Boost    | Restores part of the player HP              |
+| Crit Mode     | Gives attacks a chance to land extra damage |
+
+## Tech Stack
+
+- HTML5
+- CSS3
+- Vanilla JavaScript
+- Web Audio API
+- localStorage API
+
+## Project Structure
+
+```text
+boss-fight-button-masher/
+|-- index.html
+|-- boss-styles.css
+|-- boss-script.js
+|-- image.png
+|-- LICENSE
+`-- README.md
 ```
 
----
-
-## 🕹️ Features
-
-### ⚡ Core Gameplay
-
-- Keyboard + mobile button controls
-- Random damage system
-- Boss attacks on a timer
-- Increasing difficulty progression
-- Player HP and Boss HP system
-- Victory and Game Over screens
-
-### 💥 Arcade Effects
-
-- Screen shake on every hit
-- Flashing boss hit animation
-- Floating damage numbers
-- Boss death animation
-- Neon retro UI
-- Scanline CRT background effect
-
-### 🎲 Fun Systems
-
-- Random attack names
-- Random boss trash-talk dialogue
-- Temporary power-ups
-- Retro sound effects using Web Audio API
-
-### 📱 Responsive Design
-
-- Mobile-friendly layout
-- Large tap targets
-- Responsive retro UI
-- Works on desktop and phones
-
----
-
-# 👾 Bosses
-
-| Boss | Emoji | Difficulty |
-|---|---|---|
-| THE CORPORATE ZOMBIE | 🧟 | Easy |
-| EXAM SEASON | 📚 | Medium |
-| WIFI ROUTER FROM 2009 | 📡 | Medium-Hard |
-| THE ALGORITHM | 🤖 | Hard |
-| FINAL BOSS: SLEEP DEPRIVATION | 😴 | Insane |
-
----
-
-# 🧠 Concepts Practiced
-
-This project teaches beginner-to-intermediate frontend game development concepts including:
+## What I Practiced
 
 - DOM manipulation
-- Keyboard events
+- Keyboard and click event handling
 - Game state management
-- CSS animations
-- setInterval timers
-- clearInterval cleanup
-- Dynamic CSS variables
-- Floating DOM elements
-- Randomized gameplay systems
+- Timer setup and cleanup
 - Health bar calculations
+- Randomized gameplay systems
+- CSS animation feedback
 - Responsive UI design
-- Web Audio API basics
+- Browser storage with `localStorage`
+- Small accessibility improvements with live regions and semantic markup
 
----
+## Run Locally
 
-# 🛠️ Tech Stack
+Open `index.html` in a browser.
 
-```txt
-HTML5
-CSS3
-Vanilla JavaScript
-```
+No build tools, dependencies, or package installation are required.
 
-No frameworks.
-No libraries.
-No game engine.
-Just raw frontend chaos.
+## Author
 
----
+Built by Fazal Abbas.
 
-# 📂 Project Structure
+- GitHub: https://github.com/fazal305
+- LinkedIn: https://www.linkedin.com/in/fazal-abbas-4653dg86
 
-```txt
-boss-fight-button-masher/
-│
-├── index.html
-├── boss-styles.css
-├── boss-script.js
-├── README.md
-└── LICENSE
-```
-
----
-
-# 🎯 Controls
-
-| Action | Control |
-|---|---|
-| Attack | Any keyboard key |
-| Mobile Attack | ATTACK button |
-| Next Boss | NEXT BOSS button |
-| Retry Fight | TRY AGAIN button |
-
----
-
-# 🔥 Power-Ups
-
-| Power-Up | Effect |
-|---|---|
-| DOUBLE DAMAGE | Doubles attack damage |
-| HEAL JUICE | Restores player HP |
-| CRIT MODE | Chance for huge critical hits |
-
----
-
-# 🧪 How To Run Locally
-
-Clone the repository:
-
-```bash
-git clone https://github.com/fazal305/boss-fight-button-masher.git
-```
-
-Open the project folder:
-
-```bash
-cd boss-fight-button-masher
-```
-
-Run the game by opening:
-
-```txt
-index.html
-```
-
----
-
-# 📸 Screenshot
-
-![alt text](image.png)
-
----
-
-# 🧩 Future Ideas
-
-- Combo meter system
-- Critical hit explosions
-- Boss intro cutscenes
-- Local high scores
-- Difficulty modes
-- Health potions
-- Multiplayer button mashing
-- Touch vibration on mobile
-- Pixel-art boss sprites
-- Boss special attacks
-
----
-
-# 📜 License
+## License
 
 This project is licensed under the MIT License.
-
----
-
-# 👨‍💻 Author
-
-## Fazal Abbas
-
-Frontend developer learning by building chaotic interactive projects.
-
-GitHub:
-```txt
-https://github.com/fazal305
-```
-
-LinkedIn:
-```txt
-https://www.linkedin.com/in/fazal-abbas-4653dg86
-```
-
----
-

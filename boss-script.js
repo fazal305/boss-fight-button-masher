@@ -1,93 +1,86 @@
-const BOSS_LIST = [
+const bossList = [
   {
-    id: 1,
-    name: "THE CORPORATE ZOMBIE",
-    emoji: "🧟",
-    maxHp: 200,
+    name: "DEADLINE OVERLORD",
+    symbol: "DL",
+    maxHp: 220,
     attackMin: 8,
     attackMax: 12,
     attackSpeed: 2500,
-    deathMessage: "He died as he lived. In a meeting.",
-    killMessage: "He scheduled your death for 3pm. You had no say.",
+    winMessage: "You shipped before the timer ran out.",
+    loseMessage: "The deadline landed one final critical hit.",
     color: "#39ff14"
   },
   {
-    id: 2,
     name: "EXAM SEASON",
-    emoji: "📚",
-    maxHp: 350,
+    symbol: "EX",
+    maxHp: 360,
     attackMin: 10,
     attackMax: 15,
-    attackSpeed: 2000,
-    deathMessage: "You passed. Barely.",
-    killMessage: "You forgot to study. Tragic.",
+    attackSpeed: 2100,
+    winMessage: "You passed the fight with a suspiciously good combo.",
+    loseMessage: "The revision notes arrived too late.",
     color: "#fff700"
   },
   {
-    id: 3,
-    name: "WIFI ROUTER FROM 2009",
-    emoji: "📡",
-    maxHp: 500,
+    name: "ANCIENT WIFI ROUTER",
+    symbol: "WF",
+    maxHp: 520,
     attackMin: 12,
     attackMax: 17,
     attackSpeed: 1800,
-    deathMessage: "Finally. Sweet silence.",
-    killMessage: "Packet loss. You never stood a chance.",
+    winMessage: "The signal is finally stable.",
+    loseMessage: "Packet loss ended the run.",
     color: "#00d9ff"
   },
   {
-    id: 4,
     name: "THE ALGORITHM",
-    emoji: "🤖",
-    maxHp: 750,
+    symbol: "AI",
+    maxHp: 760,
     attackMin: 14,
     attackMax: 19,
-    attackSpeed: 1400,
-    deathMessage: "Your engagement metrics are through the roof.",
-    killMessage: "The algorithm decided you were not relevant content.",
+    attackSpeed: 1450,
+    winMessage: "Your engagement metrics survived the fight.",
+    loseMessage: "The algorithm buried your combo.",
     color: "#b026ff"
   },
   {
-    id: 5,
     name: "FINAL BOSS: SLEEP DEPRIVATION",
-    emoji: "😴",
+    symbol: "ZZ",
     maxHp: 1000,
     attackMin: 16,
     attackMax: 20,
-    attackSpeed: 1000,
-    deathMessage: "You win. Now go to sleep.",
-    killMessage: "3am. You should have known.",
+    attackSpeed: 1050,
+    winMessage: "You won. The best reward is rest.",
+    loseMessage: "The 3am debuff was too strong.",
     color: "#ff1744"
   }
 ];
 
-const ATTACK_NAMES = [
-  "YEET!",
-  "HAYMAKER!",
-  "CTRL+ALT+DELETE!",
-  "GIT PUSH --FORCE!",
-  "NPM INSTALL!",
-  "STACK OVERFLOW!",
-  "COPY PASTE!",
-  "RUBBER DUCK DEBUG!",
-  "404 NOT FOUND!",
-  "UNDEFINED IS NOT A FUNCTION!",
-  "MERGE CONFLICT!",
-  "sudo rm -rf!"
+const attackNames = [
+  "Combo Hit",
+  "Power Tap",
+  "Bug Fix Bash",
+  "Sprint Strike",
+  "Cache Clear",
+  "Pixel Punch",
+  "Merge Clean",
+  "Deploy Hit",
+  "Refactor Slam",
+  "Critical Tap"
 ];
 
-const BOSS_DIALOGUES = [
-  "You call that damage?",
-  "My grandma clicks faster.",
-  "Skill issue detected.",
-  "Bro brought HTML to a boss fight.",
-  "Stop touching the keyboard like that.",
-  "This is not even my final meeting.",
-  "Your WiFi has abandoned you.",
-  "I have seen better DPS from a toaster."
+const bossDialogues = [
+  "That was almost damage.",
+  "Your combo needs more voltage.",
+  "I have seen stronger loading screens.",
+  "Keep tapping. I might notice.",
+  "That keyboard is doing its best.",
+  "Your DPS report is pending.",
+  "You are one combo away from greatness.",
+  "Try not to blink."
 ];
 
-const POWER_UPS = [
+const powerUps = [
   {
     name: "DOUBLE DAMAGE",
     message: "Power-up: DOUBLE DAMAGE for 5 seconds",
@@ -95,7 +88,7 @@ const POWER_UPS = [
     duration: 5000
   },
   {
-    name: "HEAL JUICE",
+    name: "HEAL BOOST",
     message: "Power-up: +25 Player HP",
     type: "heal",
     duration: 0
@@ -108,6 +101,9 @@ const POWER_UPS = [
   }
 ];
 
+const storageKey = "bossFightButtonMasherStats";
+let audioContext = null;
+
 const gameState = {
   currentBossIndex: 0,
   playerHp: 100,
@@ -116,15 +112,20 @@ const gameState = {
   bossAttackTimer: null,
   powerUpTimer: null,
   activePowerUp: null,
-  fightStartTime: Date.now()
+  fightStartTime: Date.now(),
+  totalHits: 0,
+  totalDamage: 0,
+  bossesDefeated: 0,
+  bestRun: 0
 };
 
 const gameContainer = document.getElementById("gameContainer");
 const gameUi = document.getElementById("gameUi");
 const bossName = document.getElementById("bossName");
-const bossEmoji = document.getElementById("bossEmoji");
+const bossSymbol = document.getElementById("bossSymbol");
 const bossStage = document.getElementById("bossStage");
 const bossDialogue = document.getElementById("bossDialogue");
+const bossProgressText = document.getElementById("bossProgressText");
 const powerUpText = document.getElementById("powerUpText");
 const bossHpText = document.getElementById("bossHpText");
 const playerHpText = document.getElementById("playerHpText");
@@ -138,46 +139,31 @@ const resultMessage = document.getElementById("resultMessage");
 const resultStats = document.getElementById("resultStats");
 const resultButton = document.getElementById("resultButton");
 
-// This gives us a random whole number between two values.
 function getRandomNumber(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-// This creates a tiny arcade sound using browser audio.
-function playSound(type) {
-  const audioContext = new AudioContext();
-  const oscillator = audioContext.createOscillator();
-  const gainNode = audioContext.createGain();
+function loadSavedStats() {
+  const savedData = localStorage.getItem(storageKey);
 
-  oscillator.connect(gainNode);
-  gainNode.connect(audioContext.destination);
-
-  if (type === "hit") {
-    oscillator.frequency.value = 180;
-  } else if (type === "bossAttack") {
-    oscillator.frequency.value = 90;
-  } else if (type === "powerUp") {
-    oscillator.frequency.value = 520;
-  } else if (type === "victory") {
-    oscillator.frequency.value = 740;
-  } else {
-    oscillator.frequency.value = 120;
+  if (!savedData) {
+    return;
   }
 
-  gainNode.gain.value = 0.08;
-  oscillator.type = "square";
-
-  oscillator.start();
-
-  setTimeout(function () {
-    oscillator.stop();
-    audioContext.close();
-  }, 100);
+  try {
+    const parsedStats = JSON.parse(savedData);
+    gameState.bestRun = Number.isInteger(parsedStats.bestRun) ? parsedStats.bestRun : 0;
+  } catch (error) {
+    localStorage.removeItem(storageKey);
+  }
 }
 
-// This loads a boss, resets its HP, and updates the screen.
+function saveStats() {
+  localStorage.setItem(storageKey, JSON.stringify({ bestRun: gameState.bestRun }));
+}
+
 function loadBoss(index) {
-  const boss = BOSS_LIST[index];
+  const boss = bossList[index];
 
   gameState.currentBossIndex = index;
   gameState.bossHp = boss.maxHp;
@@ -186,16 +172,19 @@ function loadBoss(index) {
   gameState.fightStartTime = Date.now();
 
   clearTimeout(gameState.powerUpTimer);
+  clearInterval(gameState.bossAttackTimer);
 
   document.documentElement.style.setProperty("--boss-color", boss.color);
 
   bossName.textContent = boss.name;
-  bossEmoji.textContent = boss.emoji;
+  bossSymbol.textContent = boss.symbol;
   bossDialogue.textContent = "Press attack. I dare you.";
+  bossProgressText.textContent = `${index + 1} / ${bossList.length}`;
   powerUpText.textContent = "Power-up: None";
-  attackButton.textContent = "ATTACK";
+  attackButton.textContent = "Attack";
+  attackButton.disabled = false;
 
-  bossEmoji.classList.remove("boss-dead");
+  bossSymbol.classList.remove("boss-dead");
   gameUi.classList.remove("hidden");
   resultCard.classList.add("hidden");
 
@@ -204,7 +193,6 @@ function loadBoss(index) {
   startBossAttackTimer();
 }
 
-// This runs when the player attacks using a key or the attack button.
 function attackBoss() {
   if (gameState.isGameOver) {
     return;
@@ -213,26 +201,25 @@ function attackBoss() {
   let damage = getRandomNumber(5, 15);
 
   if (gameState.activePowerUp === "doubleDamage") {
-    damage = damage * 2;
+    damage *= 2;
   }
 
   if (gameState.activePowerUp === "critMode" && Math.random() < 0.35) {
-    damage = damage * 3;
+    damage *= 3;
   }
 
-  const randomAttackName = ATTACK_NAMES[getRandomNumber(0, ATTACK_NAMES.length - 1)];
+  attackButton.textContent = attackNames[getRandomNumber(0, attackNames.length - 1)];
+  gameState.totalHits += 1;
+  gameState.totalDamage += damage;
 
-  attackButton.textContent = randomAttackName;
   dealDamageToBoss(damage);
   maybeTriggerPowerUp();
   updateBossDialogue();
   playSound("hit");
 }
 
-// This removes HP from the boss and checks if the player won.
 function dealDamageToBoss(damage) {
-  const boss = BOSS_LIST[gameState.currentBossIndex];
-
+  const boss = bossList[gameState.currentBossIndex];
   gameState.bossHp = Math.max(0, gameState.bossHp - damage);
 
   updateBossHealthBar();
@@ -241,27 +228,26 @@ function dealDamageToBoss(damage) {
 
   if (gameState.bossHp === 0) {
     gameState.isGameOver = true;
+    attackButton.disabled = true;
     clearInterval(gameState.bossAttackTimer);
     clearTimeout(gameState.powerUpTimer);
 
-    bossEmoji.classList.add("boss-dead");
+    bossSymbol.classList.add("boss-dead");
     playSound("victory");
 
-    setTimeout(function () {
+    window.setTimeout(function () {
       showVictoryScreen(boss);
-    }, 800);
+    }, 750);
   }
 }
 
-// This lets the boss attack the player.
 function bossAttack() {
   if (gameState.isGameOver) {
     return;
   }
 
-  const boss = BOSS_LIST[gameState.currentBossIndex];
+  const boss = bossList[gameState.currentBossIndex];
   const damage = getRandomNumber(boss.attackMin, boss.attackMax);
-
   gameState.playerHp = Math.max(0, gameState.playerHp - damage);
 
   updatePlayerHealthBar();
@@ -271,59 +257,47 @@ function bossAttack() {
 
   if (gameState.playerHp === 0) {
     gameState.isGameOver = true;
+    attackButton.disabled = true;
     clearInterval(gameState.bossAttackTimer);
     clearTimeout(gameState.powerUpTimer);
     showGameOverScreen(boss);
   }
 }
 
-// This updates the boss health bar width and text.
 function updateBossHealthBar() {
-  const boss = BOSS_LIST[gameState.currentBossIndex];
+  const boss = bossList[gameState.currentBossIndex];
   const hpPercent = (gameState.bossHp / boss.maxHp) * 100;
-
   bossHpFill.style.width = `${hpPercent}%`;
   bossHpText.textContent = `${gameState.bossHp} / ${boss.maxHp}`;
 }
 
-// This updates the player health bar width, text, and danger color.
 function updatePlayerHealthBar() {
   playerHpFill.style.width = `${gameState.playerHp}%`;
   playerHpText.textContent = `${gameState.playerHp} / 100`;
-
-  if (gameState.playerHp <= 25) {
-    playerHpFill.classList.add("low-health");
-  } else {
-    playerHpFill.classList.remove("low-health");
-  }
+  playerHpFill.classList.toggle("low-health", gameState.playerHp <= 25);
 }
 
-// This creates a floating damage number and removes it after the animation.
 function spawnDamageNumber(damage) {
   const damageNumber = document.createElement("div");
-
-  damageNumber.classList.add("damage-number");
-  damageNumber.textContent = `-${damage}!`;
-
+  damageNumber.className = "damage-number";
+  damageNumber.textContent = `-${damage}`;
   bossStage.appendChild(damageNumber);
 
-  setTimeout(function () {
+  window.setTimeout(function () {
     damageNumber.remove();
   }, 800);
 }
 
-// This adds quick shake and flash effects when damage happens.
 function triggerHitEffects() {
   gameContainer.classList.add("shake");
-  bossEmoji.classList.add("hit");
+  bossSymbol.classList.add("hit");
 
-  setTimeout(function () {
+  window.setTimeout(function () {
     gameContainer.classList.remove("shake");
-    bossEmoji.classList.remove("hit");
-  }, 300);
+    bossSymbol.classList.remove("hit");
+  }, 260);
 }
 
-// This randomly gives the player a power-up after attacking.
 function maybeTriggerPowerUp() {
   const shouldTriggerPowerUp = Math.random() < 0.08;
 
@@ -331,19 +305,15 @@ function maybeTriggerPowerUp() {
     return;
   }
 
-  const powerUp = POWER_UPS[getRandomNumber(0, POWER_UPS.length - 1)];
-
-  activatePowerUp(powerUp);
+  activatePowerUp(powerUps[getRandomNumber(0, powerUps.length - 1)]);
 }
 
-// This activates the selected power-up.
 function activatePowerUp(powerUp) {
   playSound("powerUp");
-
   powerUpText.textContent = powerUp.message;
   powerUpText.classList.add("power-up-flash");
 
-  setTimeout(function () {
+  window.setTimeout(function () {
     powerUpText.classList.remove("power-up-flash");
   }, 500);
 
@@ -354,111 +324,159 @@ function activatePowerUp(powerUp) {
   }
 
   gameState.activePowerUp = powerUp.type;
-
   clearTimeout(gameState.powerUpTimer);
 
-  gameState.powerUpTimer = setTimeout(function () {
+  gameState.powerUpTimer = window.setTimeout(function () {
     gameState.activePowerUp = null;
     powerUpText.textContent = "Power-up: None";
   }, powerUp.duration);
 }
 
-// This changes the boss dialogue to a random trash-talk line.
 function updateBossDialogue() {
-  const randomDialogue = BOSS_DIALOGUES[getRandomNumber(0, BOSS_DIALOGUES.length - 1)];
-
-  bossDialogue.textContent = randomDialogue;
+  bossDialogue.textContent = bossDialogues[getRandomNumber(0, bossDialogues.length - 1)];
 }
 
-// This shows the victory screen after a boss is defeated.
 function showVictoryScreen(boss) {
   const timeTaken = Math.floor((Date.now() - gameState.fightStartTime) / 1000);
   const xpGained = boss.maxHp * 10;
+  gameState.bossesDefeated += 1;
+  gameState.bestRun = Math.max(gameState.bestRun, gameState.bossesDefeated);
+  saveStats();
 
   gameUi.classList.add("hidden");
   resultCard.classList.remove("hidden");
 
   resultEyebrow.textContent = "Boss Defeated";
   resultTitle.textContent = `${boss.name} defeated`;
-  resultMessage.textContent = boss.deathMessage;
-
+  resultMessage.textContent = boss.winMessage;
   resultStats.innerHTML = `
     <div class="stat-badge">XP Gained: ${xpGained}</div>
-    <div class="stat-badge">Time Taken: ${timeTaken}s</div>
+    <div class="stat-badge">Fight Time: ${timeTaken}s</div>
+    <div class="stat-badge">Best Run: ${gameState.bestRun} / ${bossList.length}</div>
   `;
 
-  resultButton.textContent = "NEXT BOSS";
+  resultButton.textContent = "Next Boss";
   resultButton.onclick = nextBoss;
 }
 
-// This shows the game over screen when the player loses.
 function showGameOverScreen(boss) {
   gameUi.classList.add("hidden");
   resultCard.classList.remove("hidden");
 
   resultEyebrow.textContent = "Game Over";
-  resultTitle.textContent = `${boss.name} destroyed you`;
-  resultMessage.textContent = boss.killMessage;
-
+  resultTitle.textContent = `${boss.name} won the round`;
+  resultMessage.textContent = boss.loseMessage;
   resultStats.innerHTML = `
     <div class="stat-badge">Boss HP Left: ${gameState.bossHp}</div>
+    <div class="stat-badge">Total Hits: ${gameState.totalHits}</div>
+    <div class="stat-badge">Total Damage: ${gameState.totalDamage}</div>
   `;
 
-  resultButton.textContent = "TRY AGAIN";
+  resultButton.textContent = "Try Again";
   resultButton.onclick = restartBoss;
 }
 
-// This moves to the next boss or shows the final win screen.
 function nextBoss() {
   const nextBossIndex = gameState.currentBossIndex + 1;
-
   gameState.playerHp = 100;
 
-  if (nextBossIndex >= BOSS_LIST.length) {
-    gameUi.classList.add("hidden");
-    resultCard.classList.remove("hidden");
-
-    resultEyebrow.textContent = "Final Victory";
-    resultTitle.textContent = "You beat every boss";
-    resultMessage.textContent = "Arcade goblin status achieved. Legendary button masher.";
-
-    resultStats.innerHTML = `
-      <div class="stat-badge">Total Bosses Defeated: ${BOSS_LIST.length}</div>
-    `;
-
-    resultButton.textContent = "PLAY AGAIN";
-    resultButton.onclick = function () {
-      gameState.playerHp = 100;
-      loadBoss(0);
-    };
-
+  if (nextBossIndex >= bossList.length) {
+    showFinalWinScreen();
     return;
   }
 
   loadBoss(nextBossIndex);
 }
 
-// This restarts the current boss fight with full player HP.
+function showFinalWinScreen() {
+  clearInterval(gameState.bossAttackTimer);
+  gameUi.classList.add("hidden");
+  resultCard.classList.remove("hidden");
+
+  resultEyebrow.textContent = "Final Victory";
+  resultTitle.textContent = "You beat every boss";
+  resultMessage.textContent = "The full arcade run is complete.";
+  resultStats.innerHTML = `
+    <div class="stat-badge">Bosses Defeated: ${bossList.length}</div>
+    <div class="stat-badge">Total Hits: ${gameState.totalHits}</div>
+    <div class="stat-badge">Total Damage: ${gameState.totalDamage}</div>
+  `;
+
+  resultButton.textContent = "Play Again";
+  resultButton.onclick = restartFullRun;
+}
+
 function restartBoss() {
   gameState.playerHp = 100;
   loadBoss(gameState.currentBossIndex);
 }
 
-// This clears the old boss timer and starts a new one for the current boss.
+function restartFullRun() {
+  gameState.currentBossIndex = 0;
+  gameState.playerHp = 100;
+  gameState.totalHits = 0;
+  gameState.totalDamage = 0;
+  gameState.bossesDefeated = 0;
+  loadBoss(0);
+}
+
 function startBossAttackTimer() {
-  const boss = BOSS_LIST[gameState.currentBossIndex];
+  const boss = bossList[gameState.currentBossIndex];
 
   clearInterval(gameState.bossAttackTimer);
+  gameState.bossAttackTimer = window.setInterval(bossAttack, boss.attackSpeed);
+}
 
-  gameState.bossAttackTimer = setInterval(function () {
-    bossAttack();
-  }, boss.attackSpeed);
+function getAudioContext() {
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+
+  if (!AudioContext) {
+    return null;
+  }
+
+  if (!audioContext) {
+    audioContext = new AudioContext();
+  }
+
+  return audioContext;
+}
+
+function playSound(type) {
+  const context = getAudioContext();
+
+  if (!context) {
+    return;
+  }
+
+  const oscillator = context.createOscillator();
+  const gainNode = context.createGain();
+  const frequencies = {
+    hit: 180,
+    bossAttack: 90,
+    powerUp: 520,
+    victory: 740,
+    default: 120
+  };
+
+  oscillator.connect(gainNode);
+  gainNode.connect(context.destination);
+  oscillator.frequency.value = frequencies[type] || frequencies.default;
+  oscillator.type = "square";
+  gainNode.gain.setValueAtTime(0.08, context.currentTime);
+  gainNode.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 0.1);
+  oscillator.start();
+  oscillator.stop(context.currentTime + 0.1);
 }
 
 attackButton.addEventListener("click", attackBoss);
 
-document.addEventListener("keydown", function () {
+document.addEventListener("keydown", function (event) {
+  if (event.repeat || event.ctrlKey || event.metaKey || event.altKey) {
+    return;
+  }
+
   attackBoss();
 });
 
-loadBoss(0);
+loadSavedStats();
+restartFullRun();
